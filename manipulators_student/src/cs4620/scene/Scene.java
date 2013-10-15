@@ -67,13 +67,26 @@ public class Scene
 	{
 		Matrix4f nextTransform = new Matrix4f(transform);
 		
-		// TODO (Scene P3):
-		// * Modify nextTransform so the transform sends geometry from the
-		//   local frame of node to the frame of the root of the scene hierarchy
-		//   and through the view transform that was given to traverse. 
-		//   The Transforms class (cs4620.framework) contains basic transformation matrices.
-		// * Use traverser.traverseNode() to traverse this node with nextTransform.
-		// * Recursively traverse the tree.
+		Matrix4f translation = Transforms.translate3DH(node.translation.x, 
+				node.translation.y, node.translation.z);
+		Matrix4f rotationz = Transforms.rotateAxis3DH(2, node.rotation.z);
+		Matrix4f rotationy = Transforms.rotateAxis3DH(1, node.rotation.y);
+		Matrix4f rotationx = Transforms.rotateAxis3DH(0, node.rotation.x);
+		Matrix4f scale = Transforms.scale3DH(node.scaling.x, node.scaling.y, node.scaling.z);
+		
+		nextTransform.mul(translation);
+		nextTransform.mul(rotationz);
+		nextTransform.mul(rotationy);
+		nextTransform.mul(rotationx);
+		nextTransform.mul(scale);
+		
+		traverser.traverseNode(node, nextTransform);
+		
+		for(int i = 0; i < node.getChildCount(); i++)
+		{
+			SceneNode child = node.getSceneNodeChild(i);
+			traverseHelper(traverser, child, nextTransform);			
+		}
 	}
 
 	public void rebuildMeshes(GL2 gl, float tolerance)
