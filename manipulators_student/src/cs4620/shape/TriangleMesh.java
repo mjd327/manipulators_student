@@ -3,6 +3,7 @@ package cs4620.shape;
 import javax.media.opengl.GL2;
 
 import cs4620.framework.IndexBuffer;
+import cs4620.framework.TwoDimColorProgram;
 import cs4620.framework.VertexArray;
 import cs4620.framework.VertexBuffer;
 import cs4620.scene.SceneProgram;
@@ -28,6 +29,24 @@ public abstract class TriangleMesh extends Mesh {
 		// will update the buffers' contents using the setter methods below.
 		// 
 		// Assume that these vertex arrays will be drawn by the SceneProgram shader program.
+		verticesBuffer = new VertexBuffer(gl,new float[0],3);
+		normalsBuffer = new VertexBuffer(gl,new float[0],3);
+		
+		triangleIndicesBuffer =  new IndexBuffer(gl,new int[0]);
+		linesIndicesBuffer = new IndexBuffer(gl,new int[0]);
+		
+		trianglesArray = new VertexArray(gl,GL2.GL_TRIANGLES);
+		trianglesArray.setIndexBuffer(gl, triangleIndicesBuffer);
+		trianglesArray.setAttributeBuffer(gl, SceneProgram.VERTEX_INDEX, verticesBuffer);
+		trianglesArray.setAttributeBuffer(gl, SceneProgram.NORMAL_INDEX, normalsBuffer);
+		
+		wireframeArray = new VertexArray(gl,GL2.GL_LINES);
+		wireframeArray.setIndexBuffer(gl,linesIndicesBuffer);
+		wireframeArray.setAttributeBuffer(gl,TwoDimColorProgram.VERTEX_INDEX,verticesBuffer);
+		wireframeArray.setAttributeBuffer(gl,TwoDimColorProgram.COLOR_INDEX,normalsBuffer);
+		
+		
+		
 	}
 	
 	protected void setVertices(GL2 gl, float [] vertices)
@@ -72,12 +91,12 @@ public abstract class TriangleMesh extends Mesh {
 
 	public final void draw(GL2 gl)
 	{
-		// TODO (Scene P1): Draw the triangle mesh.
+		trianglesArray.draw(gl);
 	}
 	
 	public final void drawWireframe(GL2 gl)
 	{
-		// TODO (Scene P1): Draw the wireframe mesh.
+		wireframeArray.draw(gl); 
 	}
 	
 	public VertexArray getTrianglesArray()
