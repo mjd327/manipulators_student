@@ -22,13 +22,7 @@ public abstract class TriangleMesh extends Mesh {
 	public TriangleMesh(GL2 gl)
 	{
 		super(gl);
-		
-		// TODO (Scene P1): Create buffers for vertices and assign them to vertex arrays for
-		// triangle and wireframe drawing. Set the buffers to be empty initially (give them 
-		// length-zero arrays); when subclasses of TriangleMesh build their meshes, they
-		// will update the buffers' contents using the setter methods below.
-		// 
-		// Assume that these vertex arrays will be drawn by the SceneProgram shader program.
+
 		verticesBuffer = new VertexBuffer(gl,new float[0],3);
 		normalsBuffer = new VertexBuffer(gl,new float[0],3);
 		
@@ -44,9 +38,6 @@ public abstract class TriangleMesh extends Mesh {
 		wireframeArray.setIndexBuffer(gl,linesIndicesBuffer);
 		wireframeArray.setAttributeBuffer(gl,TwoDimColorProgram.VERTEX_INDEX,verticesBuffer);
 		wireframeArray.setAttributeBuffer(gl,TwoDimColorProgram.COLOR_INDEX,normalsBuffer);
-		
-		
-		
 	}
 	
 	protected void setVertices(GL2 gl, float [] vertices)

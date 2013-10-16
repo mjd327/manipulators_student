@@ -29,13 +29,6 @@ public class Sphere extends TriangleMesh {
 	@Override
 	public void buildMesh(GL2 gl, float tolerance)
 	{
-		// TODO (Scene P2): Implement mesh generation for Sphere. Your code should
-		// fill arrays of vertex positions/normals and vertex indices for triangles/lines
-		// and put this information in the GL buffers using the
-		//   set*()
-		// methods from TriangleMesh.
-		
-
 		//We need to decide how many point we are going to need in the u and v planes
 		//so that we can make a grid. 
 	    uPoints = (int) Math.ceil(2* Math.PI * radius / (.5 * tolerance)) + 1;

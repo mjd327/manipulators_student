@@ -11,14 +11,12 @@ public class Cylinder extends TriangleMesh
 {
 	float radius = 1; 
 	float height = 2; 
-	
 
 	private static float[] cylinderVertices;
 	private static float[] cylinderNormals;
 	private static int[]   cylinderTriangles;
 	private static int[]   cylinderLines;
 
-	
 	public Cylinder(GL2 gl)
 	{
 		super(gl);
@@ -27,12 +25,6 @@ public class Cylinder extends TriangleMesh
 	@Override
 	public void buildMesh(GL2 gl, float tolerance)
 	{
-		// TODO (Scene P2): Implement mesh generation for Cylinder. Your code should
-		// fill arrays of vertex positions/normals and vertex indices for triangles/lines
-		// and put this information in the GL buffers using the
-		//   set*()
-		// methods from TriangleMesh.
-
 		//We need to decide how many point we are going to need around the top and bottom
 	    int thetaPoints = (int) Math.ceil(2* Math.PI * radius / (.5 * tolerance)) + 1;
 		double thetaIncrement = ((2*Math.PI)/(thetaPoints-1));
@@ -177,10 +169,6 @@ public class Cylinder extends TriangleMesh
 		setNormals(gl, cylinderNormals);
 		setTriangleIndices(gl, cylinderTriangles);
 		setWireframeIndices(gl, cylinderLines);
-		
-		
-		
-		
 	}
 
 	//Given a theta value, returns the Cartesian coordinates of a point along the top face.
