@@ -4,6 +4,7 @@ import javax.media.opengl.GL2;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector2f;
 import javax.vecmath.Vector3f;
+import javax.xml.soap.Node;
 
 import cs4620.framework.Transforms;
 import cs4620.manip.ManipUtils;
@@ -51,7 +52,25 @@ public class RotateManip extends Manip
 	@Override
 	public void dragged(Vector2f mousePosition, Vector2f mouseDelta)
 	{
-		// TODO (Manipulators P1): Implement this manipulator.
+		float verticalOffset = mouseDelta.y; 
+		
+		//Rotation of 2Pi corresponds to vertical length of screen
+		float rotationOffset = (float) (verticalOffset * 180);
+		
+		//Set the rotation component based on which axis is being rotated 
+		if (this.axisMode == PICK_X)
+		{
+			sceneNode.rotation.x += rotationOffset;
+		}
+		if (this.axisMode == PICK_Y)
+		{
+			sceneNode.rotation.y += rotationOffset;
+		}
+		if (this.axisMode == PICK_Z)
+		{
+			sceneNode.rotation.z += rotationOffset;
+		}
+		
 	}
 
 	@Override
