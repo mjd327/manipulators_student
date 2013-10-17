@@ -2,7 +2,9 @@ package cs4620.scene;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import javax.media.opengl.GL2;
@@ -58,13 +60,35 @@ public class SceneNode extends DefaultMutableTreeNode {
 	 */
 	public Matrix4f toWorld()
 	{
-		// TODO (Manipulators P1): Return the transformation from this
-		// node's local coordinates to world space.
-		// WARNING: the handles drawn for the three manipulators will not display properly until
-		// you implement this method.
-		return Transforms.identity3DH();
+		//We will recurse up the scene tree, making a list of transforms. Then we will
+		//create the transformation matrix. 
+		Matrix4f toWorldTransform = new Matrix4f(Transforms.identity4D()); 
+		//LinkedList<Matrix4f> transformList = new LinkedList<Matrix4f>(); 
+		
+		SceneNode currNode = this; 
+		//Recurse through the parents building up the list of transformations.
+		while (currNode != null)
+		{
+			
+			Matrix4f translation = Transforms.translate3DH(currNode.translation.x, 
+					currNode.translation.y, currNode.translation.z);
+			Matrix4f rotationz = Transforms.rotateAxis3DH(2, currNode.rotation.z);
+			Matrix4f rotationy = Transforms.rotateAxis3DH(1, currNode.rotation.y);
+			Matrix4f rotationx = Transforms.rotateAxis3DH(0, currNode.rotation.x);
+			Matrix4f scale = Transforms.scale3DH(currNode.scaling.x, currNode.scaling.y, currNode.scaling.z);	
+			
+			toWorldTransform.mul(scale,toWorldTransform);
+			toWorldTransform.mul(rotationx,toWorldTransform);
+			toWorldTransform.mul(rotationy,toWorldTransform);
+			toWorldTransform.mul(rotationz,toWorldTransform);
+			toWorldTransform.mul(translation,toWorldTransform);	
+			currNode = currNode.getSceneNodeParent(); 
+
+		} 
+		return toWorldTransform;
+		
 	}
-	
+
 	/**
 	 * Given the view matrix of the camera, returns the transformation
 	 * taking this node to eye space.
