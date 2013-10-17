@@ -177,7 +177,47 @@ public abstract class Camera {
 	
 	public void getRayNDC(Vector2f ndc, Vector3f p, Vector3f v)
 	{
-		// TODO (Manipulators P1): Implement this helper method as described in the assignment
-		// description and the comment above.
+		//Invert (MperMcam) so that we can move from NDC to world
+		Matrix4f inverseMatrix = new Matrix4f(this.getProjection());
+		inverseMatrix.mul(this.getView());
+		inverseMatrix.invert();
+		
+		//Expand our NDC coordinates, to be homogenous. Create matrix to allow for multiplication. 
+		Matrix4f nearPlaneNDC = 
+				 new Matrix4f(
+						ndc.x,    0.0f,   0.0f, 0.0f,
+		                ndc.y,    0.0f,    0.0f, 0.0f,
+		                -1.0f, 0.0f, 0.0f, 0.0f,
+		                1.0f, 0.0f, 0.0f, 0.0f);
+				
+				
+		Matrix4f farPlaneNDC =  new Matrix4f(
+				ndc.x,    0.0f,   0.0f, 0.0f,
+                ndc.y,    0.0f,    0.0f, 0.0f,
+                1.0f, 0.0f, 0.0f, 0.0f,
+                1.0f, 0.0f, 0.0f, 0.0f);
+		
+		
+		Matrix4f nearTransform = new Matrix4f(inverseMatrix);
+		Matrix4f farTransform = new Matrix4f(inverseMatrix); 
+		
+		//Transform from NDC to World by multiplying the inverse Matrix * our vectors (Which need to be afterwards extracted
+		//from the 4x4 matrix. 
+		Vector4f nearPlaneWorld = new Vector4f();
+		Vector4f farPlaneWorld = new Vector4f(); 
+		nearTransform.mul(nearPlaneNDC);
+		nearTransform.getColumn(0,nearPlaneWorld);
+		farTransform.mul(farPlaneNDC); 
+		farTransform.getColumn(0, farPlaneWorld);
+		
+		//Now we must homogenize by dividing by 4th component
+		nearPlaneWorld.scale(1/nearPlaneWorld.w);
+		farPlaneWorld.scale(1/farPlaneWorld.w); 
+		
+		//We now have two points along the ray in world coordinates, so we set one to be the point, and get the 
+		//direction between them as the vector. 
+		p.set(nearPlaneWorld.x, nearPlaneWorld.y, nearPlaneWorld.z);
+		v.set(farPlaneWorld.x - nearPlaneWorld.x, farPlaneWorld.y - nearPlaneWorld.y,
+				farPlaneWorld.z - nearPlaneWorld.z);
 	}
 }

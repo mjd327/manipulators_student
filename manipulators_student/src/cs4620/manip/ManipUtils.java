@@ -114,7 +114,25 @@ public class ManipUtils {
 	{
 		// TODO (Manipulators P1): Implement this helper method as described in the assignment
 		// description and the comment above.
-		return 0;
+		
+		//Method for solving found from http://geomalgorithms.com/a07-_distance.html, using
+		//p for P0 and pTarget for Q0.
+		Vector3f w0 = new Vector3f(p.x - pTarget.x, p.y - pTarget.y, p.z - pTarget.z);
+		float a = v.dot(v); 
+		float b = v.dot(vTarget);
+		float c = vTarget.dot(vTarget);
+		float d = v.dot(w0);
+		float e = vTarget.dot(w0); 
+		
+		//From this we can derive the equation for t and t'. We want to return t.
+		float denom = a*c - b * b;
+		
+		//If this is zero, then the lines are parallel, and we just return a constant, as any t will do. 
+		if(denom == 0)
+		{
+			return 0;
+		}
+		else return (b*e - c*d)/denom;
 	}
 	
 	/**
@@ -124,9 +142,9 @@ public class ManipUtils {
 	
 	public static float intersectRayPlane(Vector3f p, Vector3f v, Vector3f planeP, Vector3f planeN)
 	{
-		// TODO (Manipulators P1): Implement this helper method as described in the assignment
-		// description and the comment above.
-		return 0;
+		//Derived from n dot ( (p + tv) - plane P ) = 0
+		if (planeN.dot(v) == 0) return 0;  
+		return (planeN.dot(planeP) - planeN.dot(p))/(planeN.dot(v));
 	}
 
 }
