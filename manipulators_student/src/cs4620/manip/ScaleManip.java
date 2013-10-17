@@ -106,58 +106,19 @@ public class ScaleManip extends Manip {
 	@Override
 	public void dragged(Vector2f mousePosition, Vector2f mouseDelta)
 	{	
-		if(axisMode == PICK_CENTER) translateOnCenter(mousePosition,mouseDelta);
+		if(axisMode == PICK_CENTER) scaleOnCenter(mousePosition,mouseDelta);
 		else scaleOnAxis(mousePosition, mouseDelta);
 		
 	}
 	
 	/*Translation for when the mouse has clicked on the center cube. Calculates the 
 	 *translation and updates translation matrix accordingly*/
-	private void translateOnCenter(Vector2f mousePosition, Vector2f mouseDelta)
+	private void scaleOnCenter(Vector2f mousePosition, Vector2f mouseDelta)
 	{
-		
-		Matrix4f toWorldTransform = sceneNode.toWorld(); 
-		//Fourth column of world transform corresponds to origin in world coordinates,
-		//because worldTransform is homogenous and identiy matrix 4th column is (0,0,0,1)
-		//Together these define the plane parallel to the camera's view plane in which the node lies
-		Vector3f originInWorld = new Vector3f(toWorldTransform.getElement(0, 3), toWorldTransform.getElement(1,3), 
-						toWorldTransform.getElement(2,3));
-		Vector3f planeNormal = camera.getViewDir(); 
-		
-		//Create two eye rays, for the points before and after the mouse drag.
-		//Then put it into world coordinates. 
-		Vector3f eyeRayP0 = new Vector3f(); 
-		Vector3f eyeRayV0 = new Vector3f(); 
-		Vector3f eyeRayP1 = new Vector3f(); 
-		Vector3f eyeRayV1 = new Vector3f(); 
-		Vector2f prevMouse = (new Vector2f(mousePosition.x - mouseDelta.x, mousePosition.y - mouseDelta.y)); 
-		camera.getRayNDC(prevMouse,eyeRayP0,eyeRayV0);
-		camera.getRayNDC(mousePosition,eyeRayP1,eyeRayV1); 
-		
-		//Intersect eye rays with plane containing node's origin, and find the
-		//intersection points. 
-		float t0 = ManipUtils.intersectRayPlane(eyeRayP0, eyeRayV0, originInWorld, planeNormal);
-		float t1 = ManipUtils.intersectRayPlane(eyeRayP1, eyeRayV1, originInWorld, planeNormal);
-		
-		//Point on Plane = eye Origin + t * viewDir
-		Vector3f pOld = new Vector3f(eyeRayV0);
-		pOld.scaleAdd(t0, eyeRayP0);
-		Vector3f pNew = new Vector3f(eyeRayV1);
-		pNew.scaleAdd(t1, eyeRayP1);
-		
-		Vector3f translationDisplacement = new Vector3f(pNew.x - pOld.x, 
-				pNew.y - pOld.y, pNew.z - pOld.z); 
-		
-		//We need to transform this from world to local coordinates. 
-		Matrix4f fromWorldTransform = new Matrix4f(); 
-		fromWorldTransform.invert(toWorldTransform); 
-		fromWorldTransform.transform(translationDisplacement); 
-		
-		//Now we update the translation matrix. 
-		 sceneNode.setTranslation(sceneNode.translation.x + translationDisplacement.x, 
-					sceneNode.translation.y + translationDisplacement.y, 
-					sceneNode.translation.z + translationDisplacement.z);
-		
+		float verticalOffset = mouseDelta.y;
+		float scaleFactor = (float) Math.pow(2, verticalOffset);
+		sceneNode.scaling.set(scaleFactor*sceneNode.scaling.x, scaleFactor*sceneNode.scaling.y,
+				scaleFactor*sceneNode.scaling.z);
 	}
 
 	/*Scaling for when the mouse has clicked on one of the axes. Calculates the 
@@ -200,7 +161,7 @@ public class ScaleManip extends Manip {
 		}
 		
 		//Now we have origin and axis in world coordinates and can finally get our two t values. 
-		float t0 = ManipUtils.timeClosestToRay(origin,axis,eyeRayP0,eyeRayV0);
+		float t0 = ManipUtils.timeClosestToRay(origin, axis, eyeRayP0, eyeRayV0);
 		float t1 = ManipUtils.timeClosestToRay(origin, axis, eyeRayP1, eyeRayV1);
 		
 		float scaleOffset = t1 - t0; 

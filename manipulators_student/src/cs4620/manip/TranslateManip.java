@@ -156,7 +156,7 @@ public class TranslateManip extends Manip
 		}
 		
 		//Now we have origin and axis in world coordinates and can finally get our two t values. 
-		float t0 = ManipUtils.timeClosestToRay(origin,axis,eyeRayP0,eyeRayV0);
+		float t0 = ManipUtils.timeClosestToRay(origin, axis, eyeRayP0, eyeRayV0);
 		float t1 = ManipUtils.timeClosestToRay(origin, axis, eyeRayP1, eyeRayV1);
 		
 		float translationOffset = t1 - t0; 
